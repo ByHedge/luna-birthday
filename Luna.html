@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Luna!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Temel Stil Ayarlamaları */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #FFD1DC, #A2D9FF, #FFC0CB, #87CEFA);
+      color: #4A4A4A;
+      text-align: center; /* Body genelinde metinleri ortalar */
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-y: auto;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* Arkaplan Emojileri */
+    .emoji-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 2.5rem;
+      opacity: 0.6;
+      animation: float 15s linear infinite;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0px) rotate(0deg); }
+      to { transform: translateY(-100vh) rotate(360deg); }
+    }
+
+    /* Genel Konteyner Stilleri (Giriş ve İçerik Ekranları için) */
+    .login-container, .container {
+      position: relative;
+      z-index: 2;
+      background-color: rgba(255, 192, 203, 0.95); /* Temayla uyumlu pembe renk */
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0; /* İçeriğin daralmasını engeller */
+      margin: 20px; /* Kenarlara boşluk bırakır */
+      box-sizing: border-box; /* Padding'i genişliğe dahil eder */
+    }
+
+    /* Giriş Ekranı Özel Stilleri */
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 400px; /* Maksimum genişlik belirle */
+      width: 90%; /* Daha küçük ekranlarda genişliği ayarla */
+    }
+
+    .login-container h2 {
+      color: #E91E63;
+      font-size: 1.5em; /* Lütfen şifre girin boyutunu küçülttük */
+      margin-bottom: 10px; /* Başlık altına boşluk */
+    }
+    /* Yeni eklenen mesajın stili */
+    .login-message {
+        /* Yeni renk ve boyut */
+        color: #8A2BE2; /* Mor tonlarında estetik bir renk */
+        font-family: 'Dancing Script', 'Playfair Display', cursive, serif; /* Daha estetik yazı tipleri */
+        font-size: 2.2em; /* Yazı boyutunu büyüttük */
+        font-weight: bold;
+        margin-bottom: 20px; /* `Please Enter Password` başlığından daha fazla boşluk */
+        line-height: 1.4;
+        text-align: center;
+        order: -1; /* Flex öğeleri arasında en başa gelmesini sağlar */
+        text-shadow: 1px 1px 3px rgba(138, 43, 226, 0.4), 0 0 10px rgba(255, 255, 255, 0.6); /* Hafif bir parlaklık ve derinlik */
+    }
+
+
+    .login-container input[type="password"] {
+      padding: 12px 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 1.1em;
+      width: 100%; /* Giriş alanını konteynere göre tam genişlikte yap */
+      max-width: 280px; /* Maksimum genişliğini belirle */
+      box-sizing: border-box; /* Padding'i genişliğe dahil et */
+      outline: none;
+    }
+
+    .login-container button {
+      background-color: #87CEFA;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%; /* Butonu konteynere göre tam genişlikte yap */
+      max-width: 280px; /* Maksimum genişliğini belirle */
+    }
+
+    .login-container button:hover {
+      background-color: #6CB4EE;
+    }
+
+    .error-message {
+      color: #FF0000;
+      font-weight: bold;
+      display: none;
+      text-align: center;
+    }
+
+    /* İçerik Konteyneri Stilleri */
+    .container {
+      max-width: 800px;
+      width: 90%; /* Daha küçük ekranlarda genişliği ayarla */
+      display: none; /* İçerik başlangıçta gizli olmalı, JS ile gösterilecek */
+      text-align: center; /* İçerik konteynerinin içindeki her şeyi ortalar */
+      background-color: rgba(255, 192, 203, 0.9); /* Temayla uyumlu pembe renk, hafif daha saydam */
+    }
+
+    h1 {
+      color: #E91E63;
+      font-size: 2.8em;
+      margin-bottom: 20px;
+      word-wrap: break-word; /* Uzun kelimelerin taşmasını engeller */
+      text-align: center; /* Başlığı ortalar */
+    }
+
+    .birthday-message {
+      font-size: 1.1em;
+      margin-bottom: 30px;
+      text-align: center; /* Bu kısmı 'left' yerine 'center' olarak değiştirdik */
+      line-height: 1.8; /* Daha okunaklı olması için satır yüksekliğini artır */
+      padding: 0 10px; /* Küçük ekranlarda metnin kenarlara yapışmasını engelle */
+    }
+
+    /* Görsel Stilleri */
+    .container img {
+      max-width: 400px; /* Görselin maksimum genişliği */
+      width: 100%; /* Küçük ekranlarda otomatik uyum sağlar */
+      height: auto;
+      border-radius: 15px;
+    }
+    
+    /* Celebration Emojis Stilleri */
+    .celebration-emojis {
+      font-size: 3em;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 30px 0;
+    }
+
+    .heart {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .confetti {
+      animation: shake 0.5s ease-in-out infinite;
+    }
+
+    .balloon {
+      animation: floatUpAnimation 3s ease-in-out infinite;
+    }
+
+    /* Animasyon Anahtar Kareleri */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+    }
+
+    @keyframes floatUpAnimation { /* Mevcut floatUp ile çakışmaması için yeni isim */
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+
+    /* Şarkı Listesi Stilleri */
+    .song-list {
+      list-style: none;
+      padding: 0;
+      text-align: left; /* Şarkı listesi metinlerini sola yaslı tutmaya devam et*/
+      margin-top: 30px; /* Liste öncesi boşluk */
+      max-width: 600px; /* Liste için maksimum genişlik */
+      margin-left: auto; /* Listeyi ortalamak için */
+      margin-right: auto; /* Listeyi ortalamak için */
+    }
+
+    .song-item {
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #e0e0e0;
+    }
+
+    .song-title {
+      color: #4682B4;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
+
+    /* Şarkı Başlığı Link Stilleri */
+    .song-title a {
+      color: #4682B4; /* Başlık rengini koru */
+      text-decoration: none; /* Alt çizgiyi kaldır */
+      transition: color 0.3s; /* Hover efekti için geçiş */
+    }
+
+    .song-title a:hover {
+      color: #E91E63; /* Hover olduğunda pembe renk */
+      text-decoration: underline; /* Alt çizgi ekle */
+    }
+
+    .song-description {
+      font-size: 0.95em;
+      color: #666;
+    }
+
+    .playlist-button {
+      display: inline-block;
+      background-color: #FF6B6B;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 30px;
+      transition: background-color 0.3s;
+      white-space: nowrap; /* Metnin tek satırda kalmasını sağlar */
+    }
+
+    .playlist-button:hover {
+      background-color: #E91E63;
+    }
+
+    /* Responsive Ayarlamalar (Media Queries) */
+
+    /* Daha küçük ekranlar için genel düzenlemeler */
+    @media (max-width: 768px) {
+      .login-container, .container {
+        padding: 30px; /* Daha küçük padding */
+        margin: 15px; /* Daha az dış boşluk */
+      }
+
+      .login-container h2 {
+        font-size: 1.3em; /* Responsive olarak daha da küçült */
+      }
+      .login-message { /* Responsive olarak login-message boyutunu ayarla */
+          font-size: 1.8em; /* Küçük ekranlarda da büyük kalsın */
+          margin-bottom: 15px;
+      }
+
+      .birthday-message {
+        font-size: 1em; /* Metin boyutunu küçült */
+        padding: 0; /* Kenar boşluğunu kaldır */
+        text-align: center; /* Küçük ekranlarda da ortalı kalsın */
+      }
+
+      h1 {
+        font-size: 2.2em; /* Ana başlık boyutunu küçült */
+        text-align: center; /* Küçük ekranlarda da ortalı kalsın */
+      }
+
+      .song-title {
+        font-size: 1em;
+      }
+
+      .song-description {
+        font-size: 0.9em;
+      }
+
+      .playlist-button {
+        padding: 10px 20px; /* Buton padding'ini küçült */
+        font-size: 1em;
+      }
+    }
+
+    /* Ekstra küçük ekranlar (telefonlar) için özel düzenlemeler */
+    @media (max-width: 480px) {
+      .login-container, .container {
+        padding: 20px; /* En küçük ekranlar için padding */
+        margin: 10px; /* En küçük ekranlar için dış boşluk */
+        border-radius: 10px; /* Daha küçük yuvarlama */
+      }
+
+      .login-container input[type="password"],
+      .login-container button {
+        max-width: 100%; /* Tam genişlik kullan */
+      }
+      .login-message { /* Responsive olarak login-message boyutunu daha da küçült */
+          font-size: 1.6em; /* Çok küçük ekranlarda da okunur kalsın */
+          margin-bottom: 10px;
+      }
+
+      h1 {
+        font-size: 1.8em; /* Çok küçük ekranlarda başlık boyutunu daha da küçült */
+        text-align: center; /* Çok küçük ekranlarda da ortalı kalsın */
+      }
+
+      .birthday-message {
+        font-size: 0.95em; /* Metin boyutunu daha da küçült */
+        text-align: center; /* Çok küçük ekranlarda da ortalı kalsın */
+      }
+
+      .song-list {
+        text-align: left; /* Şarkı listesi metinlerini sola yaslı tutmaya devam et*/
+        max-width: 90%; /* Küçük ekranlarda listeyi tam genişlikte kullan */
+      }
+
+      .song-item {
+        margin-bottom: 20px; /* Şarkı itemları arasındaki boşluğu azalt */
+        padding-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="emoji-background" id="emojiBackground"></div>
+
+  <div class="login-container" id="loginScreen">
+    <p class="login-message"><strong>Silent queen of the sky, pearl of the night, Luna.</strong></p>
+    <h2>Please Enter Password</h2>
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button onclick="checkPassword()">Enter</button>
+    <p class="error-message" id="errorMessage">Wrong password! Please try again.</p>
+  </div>
+
+  <div class="container" id="contentContainer">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="Luna.png" alt="Happy Birthday Luna">
+    </div>
+
+    <div class="celebration-emojis">
+      <span class="heart">❤️</span>
+      <span class="confetti">🎊</span>
+      <span class="balloon">🎈</span>
+    </div>
+    <h1>Happy Birthday, Luna!</h1>
+    
+    <div class="birthday-message">
+      <p>Wishing you a year as bright, radiant, and beautiful as your smile—one that sparkles with endless joy and lights up every corner of your world. May this new chapter unfold like a storybook filled with shimmering happiness that dances in the air, unforgettable moments that warm your heart, and dreams that blossom into reality with every step you take. You are the magic that turns ordinary days into extraordinary memories, and your presence is a gift that colors the lives of everyone around you. So, here's to you—your laughter, your light, and all the incredible adventures waiting just around the corner. Celebrate your year with open arms, a joyful heart, and that beautiful smile that makes the world a better place!</p>
+      
+      <p>I've prepared these songs for you, hoping you enjoy listening to them and cherish beautiful memories with the people in your life while doing so. Happy Birthday again, Luna!</p>
+    </div>
+
+    <div class="music-section">
+      <ul class="song-list">
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">1. Adventure of a Lifetime – Coldplay</a></div>
+          <div class="song-description">A call to embrace life's joyful adventures. May this year be full of unforgettable moments that make your spirit dance.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">2. Birthday Girl – Lizzo</a></div>
+          <div class="song-description">A celebration of your unique sparkle. Let this year be as vibrant and confident as you are.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">3. Counting Stars – OneRepublic</a></div>
+          <div class="song-description">Dream big and reach for the stars. May your journey be filled with hope and endless possibilities.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">4. There's Nothing Holdin' Me Back – Shawn Mendes</a></div>
+          <div class="song-description">Freedom and fearless love. Let this age be the time you break all chains and soar.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">5. A Sky Full of Stars – Coldplay</a></div>
+          <div class="song-description">Like a sky filled with shining stars, may your life be bright and full of wonder.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">6. The Nights – Avicii</a></div>
+          <div class="song-description">Live your life to the fullest, creating stories worth telling under the night sky.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">7. Thunder – Imagine Dragons</a></div>
+          <div class="song-description">Harness your inner power and let your strength roar like thunder.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">8. I Like Me Better – Lauv</a></div>
+          <div class="song-description">Discovering self-love and joy. This year, fall in love with who you are becoming.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">9. Lost On You (Live) – LP</a></div>
+          <div class="song-description">A soulful reminder that sometimes getting lost helps us find what truly matters.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">10. Dernière Danse – Indila</a></div>
+          <div class="song-description">The dance of life's emotions, blending sorrow and hope into a beautiful journey.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">11. Apocalypse – Cigarettes After Sex</a></div>
+          <div class="song-description">A dreamy exploration of endings and beginnings, wrapped in gentle melodies.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">12. Sunsetz – Cigarettes After Sex</a></div>
+          <div class="song-description">Like a sunset's calm, may your days end with peace and reflection.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">13. Ocean Eyes – Billie Eilish</a></div>
+          <div class="song-description">Eyes as deep as the ocean, reflecting mystery and emotion. Let this year be one of depth and discovery.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">14. Englishman In New York – Sting</a></div>
+          <div class="song-description">The charm of being uniquely yourself, wherever you are in the world.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">15. Hotel California (Live) – Eagles</a></div>
+          <div class="song-description">A timeless tale of allure and escape, reminding us to choose our paths wisely.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">16. Bohemian Rhapsody – Queen</a></div>
+          <div class="song-description">A bold masterpiece of emotion and freedom. May your year be as vibrant and fearless.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">17. Shape Of My Heart – Sting</a></div>
+          <div class="song-description">A reflection on love's intricate patterns and the heart's true shape.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">18. Losing My Religion – R.E.M.</a></div>
+          <div class="song-description">Questioning beliefs and finding personal truth in unexpected places.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">19. Nothing Else Matters – Metallica</a></div>
+          <div class="song-description">A powerful declaration of love and sincerity, beyond all distractions.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">20. The Unforgiven – Metallica</a></div>
+          <div class="song-description">The struggle of forgiveness and self-acceptance. May you find peace in your journey.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">21. Viva La Vida – Coldplay</a></div>
+          <div class="song-description">Celebrate life's highs and lows with passion and grace.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">22. Let Her Go – Passenger</a></div>
+          <div class="song-description">Learning the value of what we had only after it's gone.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">23. All I Want (Official Live Video) – Kodaline</a></div>
+          <div class="song-description">A heartfelt plea for love and understanding in a world that sometimes feels distant.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">24. 7 Years – Lukas Graham</a></div>
+          <div class="song-description">A beautiful reflection on the passage of time and life's milestones.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">25. Enjoy the Silence – Depeche Mode</a></div>
+          <div class="song-description">Finding calm in the quiet moments where words are no longer needed.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">26. Je Veux – Zaz</a></div>
+          <div class="song-description">A joyful declaration of wanting freedom and simple pleasures.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">27. Caravanserai – Loreena McKennitt</a></div>
+          <div class="song-description">A mystical journey through ancient tales and timeless landscapes.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">28. Afterglow (Performance Video) – Ed Sheeran</a></div>
+          <div class="song-description">The lingering warmth after a beautiful moment, reminding us to cherish the light.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">29. Shape of You – Ed Sheeran</a></div>
+          <div class="song-description">A playful celebration of attraction and connection.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">30. Perfect – Ed Sheeran</a></div>
+          <div class="song-description">A tender ode to finding the perfect love in an imperfect world.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">31. Runaway – AURORA</a></div>
+          <div class="song-description">Sometimes the deepest desire is to run away. May this year be one where you truly listen to your inner voice.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">32. BIRDS OF A FEATHER – Billie Eilish</a></div>
+          <div class="song-description">Like soulmates flying under the same sky. May you meet someone who shares your horizon.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">33. Oh, Pretty Woman – Pomplamoose</a></div>
+          <div class="song-description">A year where beauty and authenticity come together. A reminder of the beauty in being yourself.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">34. BLUE – Billie Eilish</a></div>
+          <div class="song-description">An intricate journey of tangled emotions. May this year be one of self-understanding.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">35. Too Sweet – Hozier</a></div>
+          <div class="song-description">A sweet sentimentality that gently touches life with graceful love.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">36. Tenerife Sea – Ed Sheeran</a></div>
+          <div class="song-description">As peaceful and loving as the sea. Don't forget to listen to your heart.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">37. Moments to Memories – Adeline Hill</a></div>
+          <div class="song-description">From moments to memories... May every second be a precious chapter.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">38. blue – yung kai</a></div>
+          <div class="song-description">A melancholy in shades of blue. Let this year be your path to inner peace.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">39. SUNFLOWER (Beat) – FreshlyRC</a></div>
+          <div class="song-description">A joyful rhythm like hope turning toward the sun. May your new age be energetic and inspiring.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">40. La Vie En Rose – Emily Watts</a></div>
+          <div class="song-description">Looking at life through rose-colored glasses... A year filled with love and beauty.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">41. On Melancholy Hill – Gorillaz</a></div>
+          <div class="song-description">Sometimes melancholy is beautiful. Wishing you a year of accepting your feelings as they are.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">42. What Was I Made For? – Billie Eilish</a></div>
+          <div class="song-description">Questioning yourself can be the most fascinating journey. May this year be one of seeking meaning.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">43. Too Good At Goodbyes – Sam Smith</a></div>
+          <div class="song-description">A year of accepting farewells but never giving up on love.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">44. Fly Me To The Moon – The Macarons Project</a></div>
+          <div class="song-description">A song carrying your imagination to the skies. A year where dreams know no limits.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">45. I Feel Good – Pink Sweat$</a></div>
+          <div class="song-description">Simple yet heartfelt happiness. May you find peace even in the smallest moments.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">46. The Best Part – gardenstate & Bien</a></div>
+          <div class="song-description">The best part of being together... May this year be one where you find your missing pieces.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">47. Die With A Smile – Lady Gaga & Bruno Mars</a></div>
+          <div class="song-description">Living and leaving with a smile... Embrace life boldly this year.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">48. Good Day – Jake Scott</a></div>
+          <div class="song-description">A year where every day is a "good day." Filled with simple joys.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">49. Can't Help Falling In Love – Kina Grannis</a></div>
+          <div class="song-description">The purest form of love... May this year be filled with emotions you can surrender to.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">50. Somewhere Only We Know – Gustixa & Rhianne</a></div>
+          <div class="song-description">A place only for the two of you. May you meet someone who creates special places in your heart.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">51. Welcome to the Good Life – Sun Heat</a></div>
+          <div class="song-description">Welcome to the good life! May your new age mark the start of joyful times.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">52. lovely – Billie Eilish & Khalid</a></div>
+          <div class="song-description">Sad but beautiful. A year where even tough moments add meaning.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">53. Demons – Imagine Dragons</a></div>
+          <div class="song-description">A year where you face your inner darkness and transform it with love.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">54. Radioactive – Imagine Dragons</a></div>
+          <div class="song-description">Energy of rebirth. May this age give you strength and courage to start anew.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">55. Natural – Imagine Dragons</a></div>
+          <div class="song-description">Being as you are... Wishing you a year that flourishes with your natural self.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">56. Whatever It Takes – Imagine Dragons</a></div>
+          <div class="song-description">Ready to do whatever it takes. May the power to reach your goals be with you.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">57. Photograph – Ed Sheeran</a></div>
+          <div class="song-description">Memories captured in a photo. May your year be filled with immortal moments.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">58. Beautiful Things – Benson Boone</a></div>
+          <div class="song-description">A year open to life's little miracles.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">59. Heather – Conan Gray</a></div>
+          <div class="song-description">Someone vivid in your mind but out of reach... Wishing you to catch true love this year.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">60. Kiss Me – Ed Sheeran</a></div>
+          <div class="song-description">A closeness from the heart... May this year feel the touch of love.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">61. All of the Stars – Ed Sheeran</a></div>
+          <div class="song-description">Feelings as distant as stars yet close. May you find a love that lights your heart.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">62. Give Me Love – Ed Sheeran</a></div>
+          <div class="song-description">Loving fully... Let this new age be one where you open your heart bravely.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">63. Happier – Ed Sheeran</a></div>
+          <div class="song-description">Making peace with past sorrows and looking forward with hope. For a happier you.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">64. Shivers – Ed Sheeran</a></div>
+          <div class="song-description">Moments that make your heart tremble with excitement... May this year be full of such moments.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">65. Azizam – Ed Sheeran</a></div>
+          <div class="song-description">The sweetest word to a loved one... May you meet someone to call "azizam" this year.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">66. Sapphire – Ed Sheeran</a></div>
+          <div class="song-description">Unique like a blue stone... May you realize your worth this year.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">67. Moments We Live For – In Paradise</a></div>
+          <div class="song-description">Moments lived for living... May your new age be adorned with these moments.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">68. Take Me To Church – Hozier</a></div>
+          <div class="song-description">A year where emotions are sanctified. May your devotion to love, life, and passion shine.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">69. 5 Pieces by Hans Zimmer (Jacob's Piano)</a></div>
+          <div class="song-description">A year like a film... May you feel the music in every moment.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">70. House of the Rising Sun – The White Buffalo</a></div>
+          <div class="song-description">A story born from shadows of the past... Rewrite your story this year.</div>
+        </li>
+        <li class="song-item">
+          <div class="song-title"><a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" target="_blank">71. Summertime Sadness – Lana Del Rey</a></div>
+          <div class="song-description">Even summertime sadness suits you. May this age be a time you feel the beauty of melancholy.</div>
+        </li>
+      </ul>
+    </div>
+
+    <a href="https://youtube.com/playlist?list=PL7jJQ4L0Kg_SbG8v0icgMfp2OZKMA3lb-&si=yHa6RhfKAdP4BgIw" class="playlist-button" target="_blank">Happy Birthday! This list is for you.. :))</a>
+  </div>
+
+  <script>
+    function checkPassword() {
+      const passwordInput = document.getElementById("passwordInput").value;
+      const loginScreen = document.getElementById("loginScreen");
+      const contentContainer = document.getElementById("contentContainer");
+      const errorMessage = document.getElementById("errorMessage");
+
+      // Şifreyi küçük harfe çevirerek kontrol et
+      if (passwordInput.trim().toLowerCase() === "moon") {
+        loginScreen.style.display = "none";
+        contentContainer.style.display = "block";
+        errorMessage.style.display = "none";
+      } else {
+        errorMessage.style.display = "block";
+      }
+    }
+
+    // Create random emojis (Arkaplan emojileri)
+    const emojis = ["🎉", "🎈", "🎊", "🎂", "🎁", "🍰", "🎶", "🥳", "💖", "🕯️", "💐", "✨", "🌟", "🌸", "🧁", "🎀", "🪩", "🎇", "🎆"];
+    const background = document.getElementById("emojiBackground");
+
+    for (let i = 0; i < 40; i++) {
+      const emoji = document.createElement("div");
+      emoji.classList.add("emoji");
+      emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = Math.random() * 100 + "vw";
+      emoji.style.top = Math.random() * 100 + "vh";
+      emoji.style.fontSize = (Math.random() * 2 + 1.5) + "rem";
+      emoji.style.animationDuration = (10 + Math.random() * 20) + "s";
+      background.appendChild(emoji);
+    }
+  </script>
+</body>
+</html>
